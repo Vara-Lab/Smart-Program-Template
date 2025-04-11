@@ -1,7 +1,7 @@
 [![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)]( https://gitpod.io/new/#https://github.com/Vara-Lab/Sails-Smart-Contract-Builder-Template.git)
 
 
-# Sails Smart Contract Builder Template
+# Smart Program Template
 
 # Deploy the Contract on the IDEA Platform and Interact with Your Contract
 
