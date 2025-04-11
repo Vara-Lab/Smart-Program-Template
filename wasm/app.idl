@@ -1,0 +1,32 @@
+type Events = enum {
+  ProducerRegistered: struct { id: actor_id },
+  ProducerAlreadyRegistered: struct { id: actor_id },
+  ProducerNotFound: struct { id: actor_id },
+  EnergyUpdated: struct { id: actor_id, energy: u64 },
+  AdminRegistered: struct { id: actor_id },
+  AdminAlreadyRegistered: struct { id: actor_id },
+};
+
+type IoState = struct {
+  admins: vec actor_id,
+  energy_producers: vec IoEnergyProducer,
+};
+
+type IoEnergyProducer = struct {
+  id: actor_id,
+  energy_generated: u64,
+};
+
+constructor {
+  New : ();
+};
+
+service Service {
+  RegisterAdmin : (admin_id: actor_id) -> Events;
+  RegisterProducer : (producer_id: actor_id) -> Events;
+  UpdateProducerEnergy : (producer_id: actor_id, energy: u64) -> Events;
+  query QueryAdmins : () -> IoState;
+  query QueryEnergyProducers : () -> IoState;
+  query QueryProducerEnergy : (producer_id: actor_id) -> opt u64;
+};
+
