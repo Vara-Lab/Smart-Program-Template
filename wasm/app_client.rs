@@ -11,14 +11,12 @@ pub struct AppFactory<R> {
     #[allow(dead_code)]
     remoting: R,
 }
-
 impl<R> AppFactory<R> {
     #[allow(unused)]
     pub fn new(remoting: R) -> Self {
         Self { remoting }
     }
 }
-
 impl<R: Remoting + Clone> traits::AppFactory for AppFactory<R> {
     type Args = R::Args;
     fn new(&self) -> impl Activation<Args = R::Args> {
@@ -32,14 +30,12 @@ pub mod app_factory {
         use super::*;
         use sails_rs::calls::ActionIo;
         pub struct New(());
-
         impl New {
             #[allow(dead_code)]
             pub fn encode_call() -> Vec<u8> {
                 <New as ActionIo>::encode_call(&())
             }
         }
-
         impl ActionIo for New {
             const ROUTE: &'static [u8] = &[12, 78, 101, 119];
             type Params = ();
@@ -50,48 +46,18 @@ pub mod app_factory {
 pub struct Service<R> {
     remoting: R,
 }
-
 impl<R> Service<R> {
     pub fn new(remoting: R) -> Self {
         Self { remoting }
     }
 }
-
 impl<R: Remoting + Clone> traits::Service for Service<R> {
     type Args = R::Args;
-    fn register_admin(&mut self, admin_id: ActorId) -> impl Call<Output = Events, Args = R::Args> {
-        RemotingAction::<_, service::io::RegisterAdmin>::new(self.remoting.clone(), admin_id)
+    fn change_number(&mut self, number: u64) -> impl Call<Output = String, Args = R::Args> {
+        RemotingAction::<_, service::io::ChangeNumber>::new(self.remoting.clone(), number)
     }
-    fn register_producer(
-        &mut self,
-        producer_id: ActorId,
-    ) -> impl Call<Output = Events, Args = R::Args> {
-        RemotingAction::<_, service::io::RegisterProducer>::new(self.remoting.clone(), producer_id)
-    }
-    fn update_producer_energy(
-        &mut self,
-        producer_id: ActorId,
-        energy: u64,
-    ) -> impl Call<Output = Events, Args = R::Args> {
-        RemotingAction::<_, service::io::UpdateProducerEnergy>::new(
-            self.remoting.clone(),
-            (producer_id, energy),
-        )
-    }
-    fn query_admins(&self) -> impl Query<Output = IoState, Args = R::Args> {
-        RemotingAction::<_, service::io::QueryAdmins>::new(self.remoting.clone(), ())
-    }
-    fn query_energy_producers(&self) -> impl Query<Output = IoState, Args = R::Args> {
-        RemotingAction::<_, service::io::QueryEnergyProducers>::new(self.remoting.clone(), ())
-    }
-    fn query_producer_energy(
-        &self,
-        producer_id: ActorId,
-    ) -> impl Query<Output = Option<u64>, Args = R::Args> {
-        RemotingAction::<_, service::io::QueryProducerEnergy>::new(
-            self.remoting.clone(),
-            producer_id,
-        )
+    fn get_number(&self) -> impl Query<Output = u64, Args = R::Args> {
+        RemotingAction::<_, service::io::GetNumber>::new(self.remoting.clone(), ())
     }
 }
 
@@ -101,134 +67,36 @@ pub mod service {
     pub mod io {
         use super::*;
         use sails_rs::calls::ActionIo;
-        pub struct RegisterAdmin(());
-
-        impl RegisterAdmin {
+        pub struct ChangeNumber(());
+        impl ChangeNumber {
             #[allow(dead_code)]
-            pub fn encode_call(admin_id: ActorId) -> Vec<u8> {
-                <RegisterAdmin as ActionIo>::encode_call(&admin_id)
+            pub fn encode_call(number: u64) -> Vec<u8> {
+                <ChangeNumber as ActionIo>::encode_call(&number)
             }
         }
-
-        impl ActionIo for RegisterAdmin {
+        impl ActionIo for ChangeNumber {
             const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 52, 82, 101, 103, 105, 115, 116, 101, 114, 65,
-                100, 109, 105, 110,
+                28, 83, 101, 114, 118, 105, 99, 101, 48, 67, 104, 97, 110, 103, 101, 78, 117, 109,
+                98, 101, 114,
             ];
-            type Params = ActorId;
-            type Reply = super::Events;
+            type Params = u64;
+            type Reply = String;
         }
-        pub struct RegisterProducer(());
-
-        impl RegisterProducer {
-            #[allow(dead_code)]
-            pub fn encode_call(producer_id: ActorId) -> Vec<u8> {
-                <RegisterProducer as ActionIo>::encode_call(&producer_id)
-            }
-        }
-
-        impl ActionIo for RegisterProducer {
-            const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 64, 82, 101, 103, 105, 115, 116, 101, 114, 80,
-                114, 111, 100, 117, 99, 101, 114,
-            ];
-            type Params = ActorId;
-            type Reply = super::Events;
-        }
-        pub struct UpdateProducerEnergy(());
-
-        impl UpdateProducerEnergy {
-            #[allow(dead_code)]
-            pub fn encode_call(producer_id: ActorId, energy: u64) -> Vec<u8> {
-                <UpdateProducerEnergy as ActionIo>::encode_call(&(producer_id, energy))
-            }
-        }
-
-        impl ActionIo for UpdateProducerEnergy {
-            const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 80, 85, 112, 100, 97, 116, 101, 80, 114, 111,
-                100, 117, 99, 101, 114, 69, 110, 101, 114, 103, 121,
-            ];
-            type Params = (ActorId, u64);
-            type Reply = super::Events;
-        }
-        pub struct QueryAdmins(());
-
-        impl QueryAdmins {
+        pub struct GetNumber(());
+        impl GetNumber {
             #[allow(dead_code)]
             pub fn encode_call() -> Vec<u8> {
-                <QueryAdmins as ActionIo>::encode_call(&())
+                <GetNumber as ActionIo>::encode_call(&())
             }
         }
-
-        impl ActionIo for QueryAdmins {
+        impl ActionIo for GetNumber {
             const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 44, 81, 117, 101, 114, 121, 65, 100, 109, 105,
-                110, 115,
+                28, 83, 101, 114, 118, 105, 99, 101, 36, 71, 101, 116, 78, 117, 109, 98, 101, 114,
             ];
             type Params = ();
-            type Reply = super::IoState;
-        }
-        pub struct QueryEnergyProducers(());
-
-        impl QueryEnergyProducers {
-            #[allow(dead_code)]
-            pub fn encode_call() -> Vec<u8> {
-                <QueryEnergyProducers as ActionIo>::encode_call(&())
-            }
-        }
-
-        impl ActionIo for QueryEnergyProducers {
-            const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 80, 81, 117, 101, 114, 121, 69, 110, 101, 114,
-                103, 121, 80, 114, 111, 100, 117, 99, 101, 114, 115,
-            ];
-            type Params = ();
-            type Reply = super::IoState;
-        }
-        pub struct QueryProducerEnergy(());
-
-        impl QueryProducerEnergy {
-            #[allow(dead_code)]
-            pub fn encode_call(producer_id: ActorId) -> Vec<u8> {
-                <QueryProducerEnergy as ActionIo>::encode_call(&producer_id)
-            }
-        }
-
-        impl ActionIo for QueryProducerEnergy {
-            const ROUTE: &'static [u8] = &[
-                28, 83, 101, 114, 118, 105, 99, 101, 76, 81, 117, 101, 114, 121, 80, 114, 111, 100,
-                117, 99, 101, 114, 69, 110, 101, 114, 103, 121,
-            ];
-            type Params = ActorId;
-            type Reply = Option<u64>;
+            type Reply = u64;
         }
     }
-}
-#[derive(PartialEq, Clone, Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum Events {
-    ProducerRegistered { id: ActorId },
-    ProducerAlreadyRegistered { id: ActorId },
-    ProducerNotFound { id: ActorId },
-    EnergyUpdated { id: ActorId, energy: u64 },
-    AdminRegistered { id: ActorId },
-    AdminAlreadyRegistered { id: ActorId },
-}
-#[derive(PartialEq, Clone, Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub struct IoState {
-    pub admins: Vec<ActorId>,
-    pub energy_producers: Vec<IoEnergyProducer>,
-}
-#[derive(PartialEq, Clone, Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub struct IoEnergyProducer {
-    pub id: ActorId,
-    pub energy_generated: u64,
 }
 
 pub mod traits {
@@ -244,24 +112,7 @@ pub mod traits {
     #[allow(clippy::type_complexity)]
     pub trait Service {
         type Args;
-        fn register_admin(
-            &mut self,
-            admin_id: ActorId,
-        ) -> impl Call<Output = Events, Args = Self::Args>;
-        fn register_producer(
-            &mut self,
-            producer_id: ActorId,
-        ) -> impl Call<Output = Events, Args = Self::Args>;
-        fn update_producer_energy(
-            &mut self,
-            producer_id: ActorId,
-            energy: u64,
-        ) -> impl Call<Output = Events, Args = Self::Args>;
-        fn query_admins(&self) -> impl Query<Output = IoState, Args = Self::Args>;
-        fn query_energy_producers(&self) -> impl Query<Output = IoState, Args = Self::Args>;
-        fn query_producer_energy(
-            &self,
-            producer_id: ActorId,
-        ) -> impl Query<Output = Option<u64>, Args = Self::Args>;
+        fn change_number(&mut self, number: u64) -> impl Call<Output = String, Args = Self::Args>;
+        fn get_number(&self) -> impl Query<Output = u64, Args = Self::Args>;
     }
 }
