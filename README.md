@@ -19,10 +19,11 @@
 ### Rust: You need to have rust 1.80 or newer to be able to compile your contract:
 
 ```bash
-rustup install 1.83
-rustup default 1.83
-rustup target add wasm32-unknown-unknown
-rustup component add rust-src --toolchain 1.83-x86_64-unknown-linux-gnu
+rustup component add rust-src --toolchain 1.83.0
+rustup target add wasm32-unknown-unknown --toolchain 1.83.0
+rustup toolchain install nightly
+rustup override set nightly
+rustup target add wasm32-unknown-unknown --toolchain nightly
 ```
 ### Compile the smart contract by running the following command:
 
