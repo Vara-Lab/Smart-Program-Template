@@ -10,8 +10,18 @@ version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0"
 
+
 [workspace.dependencies]
-gstd = "=1.7.1" 
-sails-client-gen = "=0.7.3"
-sails-idl-gen = "=0.7.3"
-sails-rs = "=0.7.3"
+session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
+extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt = { git = "https://github.com/gear-foundation/standards/"}
+extended-vft = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft = { git = "https://github.com/gear-foundation/standards/"}
+keyring-service = { git = "https://github.com/Vara-Lab/Contracts-Services"}
+gstd    = "=1.8"
+sails-rs = "=0.8.0"  
+sails-client-gen = "=0.8.0"
+sails-idl-gen = "=0.8.0"
+
