@@ -1,6 +1,7 @@
 #![no_std]
 
-// necesary crates
+// Add your program code
+
 use sails_rs::prelude::*;
 
 pub mod services;

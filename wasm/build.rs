@@ -16,8 +16,8 @@ fn main() {
     let outdir_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     // Path where the file "app.idl" will be created
-    let idl_path = cargo_toml_path.clone().join("app.idl");
-    let client_path = outdir_path.clone().join("app_client.rs");
+    let idl_path = cargo_toml_path.clone().join("template.idl");
+    let client_path = outdir_path.clone().join("template_client.rs");
 
     // This generate the contract IDL
     sails_idl_gen::generate_idl_to_file::<Program>(idl_path.clone())
@@ -30,6 +30,6 @@ fn main() {
 
     // Then, copies the client that is in the OUT_DIR path in the current directory (wasm), where the 
     // "Cargo.toml" file is located 
-    fs::copy(client_path, cargo_toml_path.join("app_client.rs"))
+    fs::copy(client_path, cargo_toml_path.join("template_client.rs"))
         .unwrap();
 }
