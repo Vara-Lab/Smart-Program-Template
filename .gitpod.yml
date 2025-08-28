@@ -1,4 +1,4 @@
-image: ghcr.io/Vara-Lab/Smart-Program-Template-gitpod:latest
+image: ghcr.io/vara-lab/smart-program-template-gitpod:latest
 tasks:
   - init: |
       rustup target add wasm32v1-none
