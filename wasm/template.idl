@@ -1,0 +1,9 @@
+constructor {
+  New : ();
+};
+
+service Service {
+  ChangeNumber : (number: u64) -> str;
+  query GetNumber : () -> u64;
+};
+
